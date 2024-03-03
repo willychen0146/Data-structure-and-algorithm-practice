@@ -1,4 +1,4 @@
-## Image Segmentation
+## Image Segmentation (Union find)
 
 In this homework, the task involves segmenting input images into multiple parts, referred to as segments. Your objective for this assignment is to utilize Union-Find algorithm(s) to effectively extract key information about these segments from the input image.
 

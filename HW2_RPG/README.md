@@ -1,3 +1,5 @@
+# RPG (Dynamic programming)
+
 ## Backstory
 You are playing a console game called "Dragon and Hero". You've finally reached the final boss battle. Your hero must beat up the Evil Dragon in order to win the game, but it's a big challenge. After failing countless times, You decided to find other ways to win the game (Cheating). You found a way to hack into the game's source code and discovered that the Evil Dragon's defense and the hero's attack was hardcoded into the program. The defense of the Evil Dragon and the hero's attack on each round doesn't change every time you replay the game. Therefore, you just have to find the perfect attack and boost combo with the knowledge you just learned from PDSA-2024-spring to win.
 
