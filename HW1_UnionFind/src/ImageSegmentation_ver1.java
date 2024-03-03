@@ -1,4 +1,4 @@
-class ImageSegmentation_1 {
+class ImageSegmentation_ver1 {
 
     private int segmentCount;
     private int largestColor;
@@ -9,7 +9,7 @@ class ImageSegmentation_1 {
     private Node[][] nodes;
     private int[] colorType;
 
-    public ImageSegmentation_1(int N, int[][] inputImage) {
+    public ImageSegmentation_ver1(int N, int[][] inputImage) {
         // Initialize a N-by-N image
         segmentCount = 0;
         largestColor = 0;
@@ -268,7 +268,7 @@ class ImageSegmentation_1 {
 
         System.out.println("Example 1:");
 
-        ImageSegmentation_1 s = new ImageSegmentation_1(5, inputImage1);
+        ImageSegmentation_ver1 s = new ImageSegmentation_ver1(5, inputImage1);
         System.out.println("Number of Distinct Segments: " + s.countDistinctSegments());
 
         int[] largest = s.findLargestSegment();
@@ -287,7 +287,7 @@ class ImageSegmentation_1 {
 //
 //        System.out.println("\nExample 2:");
 //
-//        s = new ImageSegmentation_1(5, inputImage2);
+//        s = new ImageSegmentation_ver1(5, inputImage2);
 //        System.out.println("Number of Distinct Segments: " + s.countDistinctSegments());
 //
 //        largest = s.findLargestSegment();

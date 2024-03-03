@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+
 class ImageSegmentation {
 
     private int segmentCount;
