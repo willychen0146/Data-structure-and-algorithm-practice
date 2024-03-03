@@ -86,7 +86,7 @@ class RPG {
             }
             // Calculate damage if attacking or boosting after x rounds
             int damageIfAttack = Math.max(attack[round - 1] - defense[round - 1], 0);
-            int damageIfBoost = 2 * attack[round - 1] - defense[round - 1];
+            int damageIfBoost = Math.max(2 * attack[round - 1] - defense[round - 1], 0);
             // Store the damage into memo array (0: attack, 1: boost), *** assume maximum damage until n rounds is always perfect ***
             // If attack is chosen, the maximum damage until this round:
             // maximum of the previous round's damage + this round's attack damage
@@ -100,8 +100,8 @@ class RPG {
     }
 
     // Method: return the maximum damage in the memo array
-    public int dp(int round, int boost){
-        return memo[round][boost];
+    public int dp(int round, int choice){
+        return memo[round][choice];
     }
 
     public static void main(String[] args) {
