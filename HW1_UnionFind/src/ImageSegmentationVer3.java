@@ -1,15 +1,15 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+
+import edu.princeton.cs.algs4.UF;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-class ImageSegmentation_ver2 {
+class ImageSegmentationVer3 {
 
     private int segmentCount;
     private int largestColor;
@@ -17,9 +17,9 @@ class ImageSegmentation_ver2 {
     private int[][] canvas;
     int rows;
     int cols;
-    WeightedQuickUnionUF uf;
+    UF uf;
 
-    public ImageSegmentation_ver2(int N, int[][] inputImage) {
+    public ImageSegmentationVer3(int N, int[][] inputImage) {
         // Initialize a N-by-N image
         segmentCount = 0;
         largestColor = 0;
@@ -28,7 +28,7 @@ class ImageSegmentation_ver2 {
         rows = inputImage.length;
         cols = inputImage[0].length;
         // Create a UF object to manage the segments
-        uf = new WeightedQuickUnionUF(rows * cols);
+        uf = new UF(rows * cols);
 
         // initialize the image with pixel to memorize the original image with 0
         for (int i = 0; i < N; i++) {
@@ -94,7 +94,7 @@ class ImageSegmentation_ver2 {
     }
 
     public static void test(String[] args){
-        ImageSegmentation_ver2 s;
+        ImageSegmentationVer3 s;
         JSONParser jsonParser = new JSONParser();
         try (FileReader reader = new FileReader(args[0])){
             JSONArray all = (JSONArray) jsonParser.parse(reader);
@@ -126,7 +126,7 @@ class ImageSegmentation_ver2 {
                     // System.out.println("N: " + N);
                     // System.out.println("Image: " + Arrays.deepToString(image));
 
-                    s = new ImageSegmentation_ver2(N, image);
+                    s = new ImageSegmentationVer3(N, image);
 
                     int distinctSegments = ((Long) dataDetails.get("DistinctSegments")).intValue();
 
@@ -140,13 +140,13 @@ class ImageSegmentation_ver2 {
 
                     testSize++;
                     if(ans1==distinctSegments && ans2==largestColor && ans3==largestSize){
-                         System.out.println("AC");
+                        System.out.println("AC");
 
                     }else{
                         waSize++;
-                         System.out.println("WA");
-                         System.out.println("ans1: " + ans1 + " ans2: " + ans2 + " ans3: " + ans3);
-                            System.out.println("distinctSegments: " + distinctSegments + " largestColor: " + largestColor + " largestSize: " + largestSize);
+                        System.out.println("WA");
+                        System.out.println("ans1: " + ans1 + " ans2: " + ans2 + " ans3: " + ans3);
+                        System.out.println("distinctSegments: " + distinctSegments + " largestColor: " + largestColor + " largestSize: " + largestSize);
                     }
                 }
                 System.out.println("Score: " + (testSize-waSize) + " / " + testSize + " ");

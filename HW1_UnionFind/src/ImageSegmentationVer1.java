@@ -1,4 +1,4 @@
-class ImageSegmentation_ver1 {
+class ImageSegmentationVer1 {
 
     private int segmentCount;
     private int largestColor;
@@ -9,7 +9,7 @@ class ImageSegmentation_ver1 {
     private Node[][] nodes;
     private int[] colorType;
 
-    public ImageSegmentation_ver1(int N, int[][] inputImage) {
+    public ImageSegmentationVer1(int N, int[][] inputImage) {
         // Initialize a N-by-N image
         segmentCount = 0;
         largestColor = 0;
@@ -31,13 +31,13 @@ class ImageSegmentation_ver1 {
                 }
             }
         }
-        System.out.println("segCanvas:");
-        for(int i = 0; i < N; i++){
-            for(int j = 0; j < N; j++){
-                System.out.print(segCanvas[i][j] + " ");
-            }
-            System.out.println();
-        }
+//        System.out.println("segCanvas:");
+//        for(int i = 0; i < N; i++){
+//            for(int j = 0; j < N; j++){
+//                System.out.print(segCanvas[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
         // union find to create new pixel map
         for(int i = 0; i < N; i++){
             for(int j = 0; j < N; j++){
@@ -57,20 +57,20 @@ class ImageSegmentation_ver1 {
             }
         }
 
-        System.out.println("canvas:");
-        for(int i = 0; i < N; i++){
-            for(int j = 0; j < N; j++){
-                System.out.print(canvas[i][j] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("segCanvas:");
-        for(int i = 0; i < N; i++){
-            for(int j = 0; j < N; j++){
-                System.out.print(segCanvas[i][j] + " ");
-            }
-            System.out.println();
-        }
+//        System.out.println("canvas:");
+//        for(int i = 0; i < N; i++){
+//            for(int j = 0; j < N; j++){
+//                System.out.print(canvas[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println("segCanvas:");
+//        for(int i = 0; i < N; i++){
+//            for(int j = 0; j < N; j++){
+//                System.out.print(segCanvas[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
     }
 
     public int countDistinctSegments() {
@@ -104,7 +104,7 @@ class ImageSegmentation_ver1 {
         int tempSize = 0;
         int tempColor = 0;
         for(int i = 0; i < (segCanvas.length)*(segCanvas.length)+1; i++){
-            System.out.println(i + ": " + colorType[i]);
+//            System.out.println(i + ": " + colorType[i]);
             if(colorType[i] == 0){
                 continue;
             }
@@ -114,19 +114,19 @@ class ImageSegmentation_ver1 {
             }
             // 遇到數量相等時，比較顏色大小
             else if(colorType[i] == tempSize){
-                System.out.println("New: " + canvas[i/segCanvas.length-1][(i-1)%segCanvas.length]);
-                System.out.println("Old: " + canvas[tempColor/segCanvas.length-1][(tempColor-1)%segCanvas.length]);
+//                System.out.println("New: " + canvas[i/segCanvas.length-1][(i-1)%segCanvas.length]);
+//                System.out.println("Old: " + canvas[tempColor/segCanvas.length-1][(tempColor-1)%segCanvas.length]);
                 if(canvas[i/segCanvas.length-1][(i-1)%segCanvas.length] < canvas[tempColor/segCanvas.length-1][(tempColor-1)%segCanvas.length]){
                     tempColor = i;
-                    System.out.println("change to: " + tempColor);
+//                    System.out.println("change to: " + tempColor);
                 }
                 else{
-                    System.out.println("no change");
+//                    System.out.println("no change");
                 }
             }
         }
         largestSize = tempSize;
-        System.out.println("tempColor: " + tempColor);
+//        System.out.println("tempColor: " + tempColor);
 
         // find the color of the largest segment
         for(int i = 0; i < segCanvas.length; i++){
@@ -268,7 +268,7 @@ class ImageSegmentation_ver1 {
 
         System.out.println("Example 1:");
 
-        ImageSegmentation_ver1 s = new ImageSegmentation_ver1(5, inputImage1);
+        ImageSegmentationVer1 s = new ImageSegmentationVer1(5, inputImage1);
         System.out.println("Number of Distinct Segments: " + s.countDistinctSegments());
 
         int[] largest = s.findLargestSegment();
@@ -277,22 +277,22 @@ class ImageSegmentation_ver1 {
 
 
         // Example 2:
-//        int[][] inputImage2 = {
-//                {0, 0, 0, 3, 0},
-//                {0, 2, 3, 3, 0},
-//                {1, 2, 2, 0, 0},
-//                {1, 2, 2, 1, 1},
-//                {0, 0, 1, 1, 1}
-//        };
-//
-//        System.out.println("\nExample 2:");
-//
-//        s = new ImageSegmentation_ver1(5, inputImage2);
-//        System.out.println("Number of Distinct Segments: " + s.countDistinctSegments());
-//
-//        largest = s.findLargestSegment();
-//        System.out.println("Size of the Largest Segment: " + largest[0]);
-//        System.out.println("Color of the Largest Segment: " + largest[1]);
+        int[][] inputImage2 = {
+                {0, 0, 0, 3, 0},
+                {0, 2, 3, 3, 0},
+                {1, 2, 2, 0, 0},
+                {1, 2, 2, 1, 1},
+                {0, 0, 1, 1, 1}
+        };
+
+        System.out.println("\nExample 2:");
+
+        s = new ImageSegmentationVer1(5, inputImage2);
+        System.out.println("Number of Distinct Segments: " + s.countDistinctSegments());
+
+        largest = s.findLargestSegment();
+        System.out.println("Size of the Largest Segment: " + largest[0]);
+        System.out.println("Color of the Largest Segment: " + largest[1]);
     }
 
 }

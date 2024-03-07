@@ -90,19 +90,21 @@ class RPG {
             // Store the damage into memo array (0: attack, 1: boost), *** assume maximum damage until n rounds is always perfect ***
             // If attack is chosen, the maximum damage until this round:
             // maximum of the previous round's damage + this round's attack damage
-            memo[round][0] = Math.max(dp(round - 1, 0) + damageIfAttack, dp(round - 1, 1) + damageIfBoost);
+//            memo[round][0] = Math.max(dp(round - 1, 0) + damageIfAttack, dp(round - 1, 1) + damageIfBoost);
+            memo[round][0] = Math.max(memo[round - 1][0] + damageIfAttack, memo[round - 1][1] + damageIfBoost);
             // If boost is chosen, the maximum damage until this round:
             // maximum of the previous round's damage + 0 (boost damage)
-            memo[round][1] = Math.max(dp(round - 1, 0), dp(round - 1, 1));
+//            memo[round][1] = Math.max(dp(round - 1, 0), dp(round - 1, 1));
+            memo[round][1] = Math.max(memo[round - 1][0], memo[round - 1][1]);
         }
         // Return the maximum damage after n rounds (choose the maximum damage in the last round between attack and boost)
         return Math.max(memo[n][0], memo[n][1]);
     }
 
     // Method: return the maximum damage in the memo array
-    public int dp(int round, int choice){
-        return memo[round][choice];
-    }
+//    public int dp(int round, int choice){
+//        return memo[round][choice];
+//    }
 
     public static void main(String[] args) {
         RPG sol = new RPG(new int []{5,4,1,7,98,2},new int []{200,200,200,200,200,200});
