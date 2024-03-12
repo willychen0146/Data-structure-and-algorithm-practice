@@ -3,11 +3,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays; // Used to print the arrays
 
-// import org.json.simple.JSONArray;
-// import org.json.simple.JSONObject;
-// import org.json.simple.parser.JSONParser;
-// import org.json.simple.parser.ParseException;
 import com.google.gson.*;
+
+import java.util.Stack;
 
 class Test{
     public static void main(String[] args){
@@ -83,66 +81,32 @@ class Mafia {
         // create an 1D array that stores the answer, length=n*2 (smallest and largest index of member that can be attacked by each member)
         int[] answer = new int[n*2];
 
-        // create an array of member objects
-        member[] members = new member[n];
-        for(int i = 0; i < n; i++){
-            members[i] = new member(levels[i], ranges[i], i);
-        }
-/*
-        // sort the members by their level in ascending order
-        Arrays.sort(members, (a, b) -> a.Level - b.Level);
-//        for(int i = 0; i < n; i++){
-//            System.out.println(members[i].Level);
-//        }
-        // create an array of index that stores the index of members that can be attacked by each member
-        int[] index = new int[n];
-        for(int i = 0; i < n; i++){
-            index[i] = members[i].Index;
-        }
-        // sort the index array in ascending order
-        Arrays.sort(index);
-        // print the index array
-//        for(int i = 0; i < n; i++){
-//            System.out.println(index[i]);
-//        }
+        // stack
+        Stack<Integer> stack = new Stack<>();
 
-        // store the leftmost and rightmost index of member that can be attacked by each member
-        for(int i = 0; i < n; i++){
-            int left = i;
-            int right = i;
-            while(left > 0 && members[i].Level - members[left - 1].Level <= members[i].Range){
-                left--;
+        // Process left limits
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && levels[stack.peek()] < levels[i]) {
+                stack.pop();
             }
-            while(right < n - 1 && members[right + 1].Level - members[i].Level <= members[i].Range){
-                right++;
-            }
-            answer[members[i].Index * 2] = index[left];
-            answer[members[i].Index * 2 + 1] = index[right];
-            // print this member's leftmost and rightmost index
-            System.out.println("Member:" + members[i].Index + "/" + answer[members[i].Index * 2] + " " + answer[members[i].Index * 2 + 1]);
+            int leftLimit = stack.isEmpty() ? 0 : stack.peek() + 1;
+            answer[i * 2] = Math.max(i - ranges[i], leftLimit);
+            stack.push(i);
         }
 
- */
-        // screen the members by their level and range
-        for(int i = 0; i < n; i++){
-            int range_l = ranges[i];
-            int range_r = ranges[i];
-            int left = i;
-            int right = i;
-            // check left
-            while(left > 0 && levels[i] > levels[left - 1] && range_l > 0){
-                left--;
-                range_l--;
+        // Clear the stack for the right limits
+        stack.clear();
+
+        // Process right limits
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && levels[stack.peek()] < levels[i]) {
+                stack.pop();
             }
-            // check right
-            while(right < n - 1 && levels[i] > levels[right + 1] && range_r > 0){
-                right++;
-                range_r--;
-            }
-            // store the leftmost and rightmost index of member that can be attacked by each member
-            answer[i * 2] = left;
-            answer[i * 2 + 1] = right;
+            int rightLimit = stack.isEmpty() ? n - 1 : stack.peek() - 1;
+            answer[i * 2 + 1] = Math.min(i + ranges[i], rightLimit);
+            stack.push(i);
         }
+
 
         return answer;
         // complete the code by returning an int[]
