@@ -81,15 +81,25 @@ class Mafia {
         // create an 1D array that stores the answer, length=n*2 (smallest and largest index of member that can be attacked by each member)
         int[] answer = new int[n*2];
 
-        // stack
+//        // create an array of member objects
+//        member[] members = new member[n];
+//        for(int i = 0; i < n; i++){
+//            members[i] = new member(levels[i], ranges[i], i);
+//        }
+
+        /*----------- Method: stack -----------*/
         Stack<Integer> stack = new Stack<>();
 
         // Process left limits
         for (int i = 0; i < n; i++) {
+            // Pop the stack until the member at the top of the stack is less than the current level
             while (!stack.isEmpty() && levels[stack.peek()] < levels[i]) {
                 stack.pop();
             }
+            // If the stack is empty, the left limit is 0, otherwise,
+            // the left limit is the next member after the member at the top of the stack
             int leftLimit = stack.isEmpty() ? 0 : stack.peek() + 1;
+            // check if range allows to attack to the left limit. If the range is smaller, adjust it.
             answer[i * 2] = Math.max(i - ranges[i], leftLimit);
             stack.push(i);
         }
@@ -99,14 +109,16 @@ class Mafia {
 
         // Process right limits
         for (int i = n - 1; i >= 0; i--) {
+            // Pop the stack until the member at the top of the stack is less than the current level
             while (!stack.isEmpty() && levels[stack.peek()] < levels[i]) {
                 stack.pop();
             }
+            // the right limit is the next member after the member at the top of the stack
             int rightLimit = stack.isEmpty() ? n - 1 : stack.peek() - 1;
+            // check if range allows to attack to the right limit. If the range is smaller, adjust it.
             answer[i * 2 + 1] = Math.min(i + ranges[i], rightLimit);
             stack.push(i);
         }
-
 
         return answer;
         // complete the code by returning an int[]

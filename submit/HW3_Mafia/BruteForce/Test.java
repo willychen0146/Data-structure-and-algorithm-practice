@@ -81,32 +81,33 @@ class Mafia {
         // create an 1D array that stores the answer, length=n*2 (smallest and largest index of member that can be attacked by each member)
         int[] answer = new int[n*2];
 
-        // create an array of member objects
-        member[] members = new member[n];
-        for(int i = 0; i < n; i++){
-            members[i] = new member(levels[i], ranges[i], i);
-        }
+//        // create an array of member objects
+//        member[] members = new member[n];
+//        for(int i = 0; i < n; i++){
+//            members[i] = new member(levels[i], ranges[i], i);
+//        }
 
-        // screen the members by their level and range
-        for(int i = 0; i < n; i++){
-            int range_l = ranges[i];
-            int range_r = ranges[i];
-            int left = i;
-            int right = i;
-            // check left
-            while(left > 0 && levels[i] > levels[left - 1] && range_l > 0){
-                left--;
-                range_l--;
-            }
-            // check right
-            while(right < n - 1 && levels[i] > levels[right + 1] && range_r > 0){
-                right++;
-                range_r--;
-            }
-            // store the leftmost and rightmost index of member that can be attacked by each member
-            answer[i * 2] = left;
-            answer[i * 2 + 1] = right;
-        }
+        /*----------- Method: BruteForce -----------*/
+       // screen the members by their level and range
+       for(int i = 0; i < n; i++){
+           int range_l = ranges[i];
+           int range_r = ranges[i];
+           int left = i;
+           int right = i;
+           // check left
+           while(left > 0 && levels[i] > levels[left - 1] && range_l > 0){
+               left--;
+               range_l--;
+           }
+           // check right
+           while(right < n - 1 && levels[i] > levels[right + 1] && range_r > 0){
+               right++;
+               range_r--;
+           }
+           // store the leftmost and rightmost index of member that can be attacked by each member
+           answer[i * 2] = left;
+           answer[i * 2 + 1] = right;
+       }
 
         return answer;
         // complete the code by returning an int[]

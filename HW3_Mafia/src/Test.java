@@ -80,22 +80,26 @@ class Mafia {
 
         // create an 1D array that stores the answer, length=n*2 (smallest and largest index of member that can be attacked by each member)
         int[] answer = new int[n*2];
-//
+
 //        // create an array of member objects
 //        member[] members = new member[n];
 //        for(int i = 0; i < n; i++){
 //            members[i] = new member(levels[i], ranges[i], i);
 //        }
 
-        // stack
+        /*----------- Method: stack -----------*/
         Stack<Integer> stack = new Stack<>();
 
         // Process left limits
         for (int i = 0; i < n; i++) {
+            // Pop the stack until the member at the top of the stack is less than the current level
             while (!stack.isEmpty() && levels[stack.peek()] < levels[i]) {
                 stack.pop();
             }
+            // If the stack is empty, the left limit is 0, otherwise,
+            // the left limit is the next member after the member at the top of the stack
             int leftLimit = stack.isEmpty() ? 0 : stack.peek() + 1;
+            // check if range allows to attack to the left limit. If the range is smaller, adjust it.
             answer[i * 2] = Math.max(i - ranges[i], leftLimit);
             stack.push(i);
         }
@@ -105,80 +109,38 @@ class Mafia {
 
         // Process right limits
         for (int i = n - 1; i >= 0; i--) {
+            // Pop the stack until the member at the top of the stack is less than the current level
             while (!stack.isEmpty() && levels[stack.peek()] < levels[i]) {
                 stack.pop();
             }
+            // the right limit is the next member after the member at the top of the stack
             int rightLimit = stack.isEmpty() ? n - 1 : stack.peek() - 1;
+            // check if range allows to attack to the right limit. If the range is smaller, adjust it.
             answer[i * 2 + 1] = Math.min(i + ranges[i], rightLimit);
             stack.push(i);
         }
 
-//        return answer;
-/*
-        // method: sorting
-        // sort the members by their level in ascending order
-        Arrays.sort(members, (a, b) -> a.Level - b.Level);
-//        for(int i = 0; i < n; i++){
-//            System.out.println("level:" + members[i].Level);
-//            System.out.println("range:" + members[i].Range);
-//            System.out.println("index:" + members[i].Index);
-//        }
-
-
-        // store the leftmost and rightmost index of member that can be attacked by each member
-        for(int i = 0; i < n; i++){
-            // if the member's level is the smallest, then it can attack no one
-//            if(i == 0 || members[i].Level != members[i + 1].Level){
-//                answer[members[i].Index * 2] = 0;
-//                answer[members[i].Index * 2 + 1] = 0;
-//            }
-            int left = i;
-            int right = i;
-            int range_l = members[i].Range;
-            int range_r = members[i].Range;
-            // check left
-            while(left > 0 && members[members[i].Index].Level != members[left - 1].Level && range_l > 0){
-                left--;
-                range_l--;
-            }
-            // check right
-            while(right < n - 1 && members[members[i].Index].Level == members[i + 1].Level && range_r > 0){
-                right++;
-                range_r--;
-            }
-            System.out.println("index:" + members[i].Index);
-            System.out.println("left:" + left);
-            System.out.println("right:" + right);
-            answer[members[i].Index * 2] = members[i- left].Index;
-            answer[members[i].Index * 2 + 1] = members[i+ right].Index;
-            // print this member's leftmost and rightmost index
-//            System.out.println("Member:" + members[i].Index + "/" + answer[members[i].Index * 2] + " " + answer[members[i].Index * 2 + 1]);
-        }
-*/
-
-        /* brute force N*N
+        /*----------- Method: BruteForce -----------*/
         // screen the members by their level and range
-        for(int i = 0; i < n; i++){
-            int range_l = ranges[i];
-            int range_r = ranges[i];
-            int left = i;
-            int right = i;
-            // check left
-            while(left > 0 && levels[i] > levels[left - 1] && range_l > 0){
-                left--;
-                range_l--;
-            }
-            // check right
-            while(right < n - 1 && levels[i] > levels[right + 1] && range_r > 0){
-                right++;
-                range_r--;
-            }
-            // store the leftmost and rightmost index of member that can be attacked by each member
-            answer[i * 2] = left;
-            answer[i * 2 + 1] = right;
-        }
-
-         */
+//        for(int i = 0; i < n; i++){
+//            int range_l = ranges[i];
+//            int range_r = ranges[i];
+//            int left = i;
+//            int right = i;
+//            // check left
+//            while(left > 0 && levels[i] > levels[left - 1] && range_l > 0){
+//                left--;
+//                range_l--;
+//            }
+//            // check right
+//            while(right < n - 1 && levels[i] > levels[right + 1] && range_r > 0){
+//                right++;
+//                range_r--;
+//            }
+//            // store the leftmost and rightmost index of member that can be attacked by each member
+//            answer[i * 2] = left;
+//            answer[i * 2 + 1] = right;
+//        }
 
         return answer;
         // complete the code by returning an int[]
