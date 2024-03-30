@@ -108,3 +108,13 @@ Number of Distinct Segments: 4
 Size of the Largest Segment: 5
 Color of the Largest Segment: 1
 ```
+
+### File Download
+[Test Code](https://drive.google.com/file/d/1P-pfGVZd10p-MVQH9tpQUi6iS3TLkg9F/view?usp=drive_link)
+
+[Test Case](https://drive.google.com/file/d/1gbA6bSKtGWAXo3JK-O5mF07qxom0kBa2/view?usp=drive_link)
+
+[Lib](https://drive.google.com/drive/folders/1PA-RsQGZ1ohV2GhuWWL-x5NLBL9k9j4L?usp=sharing)
+
+### Reference
+[PDSA](https://hackmd.io/@CiqLOooyRwWmK--mMkfetA/HJ4n-eiPp)

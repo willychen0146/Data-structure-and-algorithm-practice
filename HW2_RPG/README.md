@@ -90,3 +90,15 @@ Round 1: Boost, Round 2: Boost, Round 3: Boost
 Damage = 0 + 0 + 0 = 0
 maxDamage(3) = 498
 ```
+
+## File Download
+[Test Code](https://drive.google.com/file/d/10i6WqKswwYh10tyb0qTlXebrv5CVDsy4/view?usp=sharing)
+
+[Test Case](https://drive.google.com/file/d/1ioPvSS3DPRspdTTP4QJhbjF-ybcQkinT/view?usp=drive_link)
+
+[algs4.jar library](https://algs4.cs.princeton.edu/code/algs4.jar)
+
+[gson.jar library](https://drive.google.com/file/d/1gUhlPLTc4EA8P-R_qf3a4uynCQeR0TgH/view?usp=drive_link)
+
+## Reference
+[PDSA](https://hackmd.io/zLsF_gc7RuqAfngMAVFhLA)
