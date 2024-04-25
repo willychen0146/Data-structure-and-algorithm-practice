@@ -6,3 +6,5 @@ The main library I used in this project can be found on this [website](https://a
  - HW2: Dynamic Programming
  - HW3: Data Structure - Stack
  - HW4: GrahamScan and Convex Hull
+ - HW5: Priority queue
+ - HW6: Event Driven Simulation
