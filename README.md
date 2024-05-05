@@ -8,3 +8,4 @@ The main library I used in this project can be found on this [website](https://a
  - HW4: GrahamScan and Convex Hull
  - HW5: Priority queue
  - HW6: Event Driven Simulation
+ - HW7: Binary search tree and Red-Black BST
