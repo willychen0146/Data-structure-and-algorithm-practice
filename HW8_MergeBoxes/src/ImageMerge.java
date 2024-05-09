@@ -1,0 +1,340 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.HashSet;
+
+import com.google.gson.*;
+
+import edu.princeton.cs.algs4.StdDraw;
+
+class BoundingBox {
+    double leftX, upY, width, height;
+
+    BoundingBox(double leftX, double upY, double width, double height) {
+        this.leftX = leftX;
+        this.upY = upY;
+        this.width = width;
+        this.height = height;
+    }
+
+    double rightX() {
+        return leftX + width;
+    }
+
+    double downY() {
+        return upY + height;
+    }
+
+    double area() {
+        return width * height;
+    }
+
+    static double iou(BoundingBox box1, BoundingBox box2) {
+        double left = Math.max(box1.leftX, box2.leftX);
+        double right = Math.min(box1.rightX(), box2.rightX());
+        double top = Math.max(box1.upY, box2.upY);
+        double bottom = Math.min(box1.downY(), box2.downY());
+
+        double overlap = 0;
+        if (right > left && bottom > top) {
+            overlap = (right - left) * (bottom - top);
+        }
+
+        return overlap / (box1.area() + box2.area() - overlap);
+    }
+
+    BoundingBox merge(BoundingBox other) {
+        double newLeftX = Math.min(this.leftX, other.leftX);
+        double newUpY = Math.min(this.upY, other.upY);
+        double newRightX = Math.max(this.rightX(), other.rightX());
+        double newDownY = Math.max(this.downY(), other.downY());
+        return new BoundingBox(newLeftX, newUpY, newRightX - newLeftX, newDownY - newUpY);
+    }
+}
+
+class Event implements Comparable<Event> {
+    enum Type { START, END }
+    double x;
+    BoundingBox box;
+    Type type;
+
+    Event(double x, BoundingBox box, Type type) {
+        this.x = x;
+        this.box = box;
+        this.type = type;
+    }
+
+    @Override
+    public int compareTo(Event other) {
+        return Double.compare(this.x, other.x);
+    }
+}
+
+class IntervalSearchTree {
+    private TreeMap<Double, List<BoundingBox>> tree;
+
+    public IntervalSearchTree() {
+        this.tree = new TreeMap<>();
+    }
+
+    public void insert(BoundingBox box) {
+        this.tree.computeIfAbsent(box.upY, k -> new ArrayList<>()).add(box);
+    }
+
+    public void remove(BoundingBox box) {
+        List<BoundingBox> boxes = this.tree.get(box.upY);
+        if (boxes != null) {
+            boxes.remove(box);
+            if (boxes.isEmpty()) {
+                this.tree.remove(box.upY);
+            }
+        }
+    }
+
+    public List<BoundingBox> searchOverlapping(BoundingBox queryBox) {
+        List<BoundingBox> overlappingBoxes = new ArrayList<>();
+        for (Map.Entry<Double, List<BoundingBox>> entry : this.tree.entrySet()) {
+            double key = entry.getKey();
+            if (key < queryBox.downY() && key + entry.getValue().get(0).height > queryBox.upY) {
+                for (BoundingBox box : entry.getValue()) {
+                    if (box.downY() > queryBox.upY && box.upY < queryBox.downY()) {
+                        overlappingBoxes.add(box);
+                    }
+                }
+            }
+        }
+        return overlappingBoxes;
+    }
+}
+
+
+class ImageMerge {
+    private double[][] bbs;
+    private double iou_thresh;
+    private IntervalSearchTree intervalSearchTree;
+    private PriorityQueue<Event> eventQueue;
+    private List<BoundingBox> mergedBoxes;
+
+    public ImageMerge(double[][] bbs, double iou_thresh){
+        //bbs(bounding boxes): [up_left_x,up_left_y,width,height]
+        //iou_threshold:          [0.0,1.0]
+        this.bbs = bbs;
+        this.iou_thresh = iou_thresh;
+        this.intervalSearchTree = new IntervalSearchTree();
+        this.eventQueue = new PriorityQueue<>();
+        this.mergedBoxes = new ArrayList<>();
+
+        for (double[] bb : this.bbs) {
+            BoundingBox box = new BoundingBox(bb[0], bb[1], bb[2], bb[3]);
+            eventQueue.add(new Event(box.leftX, box, Event.Type.START));
+            eventQueue.add(new Event(box.rightX(), box, Event.Type.END));
+        }
+    }
+
+    private BoundingBox mergeIfNecessary(BoundingBox box1, BoundingBox box2) {
+        if (BoundingBox.iou(box1, box2) >= iou_thresh) {
+            return box1.merge(box2);
+        }
+        return null;
+    }
+
+    private void sortMergedBoxes() {
+        mergedBoxes.sort((box1, box2) -> {
+            if (box1.leftX != box2.leftX) return Double.compare(box1.leftX, box2.leftX);
+            if (box1.upY != box2.upY) return Double.compare(box1.upY, box2.upY);
+            if (box1.width != box2.width) return Double.compare(box1.width, box2.width);
+            return Double.compare(box1.height, box2.height);
+        });
+    }
+
+    private double[][] convertToOutputFormat() {
+        double[][] result = new double[mergedBoxes.size()][4];
+        for (int i = 0; i < mergedBoxes.size(); i++) {
+            BoundingBox box = mergedBoxes.get(i);
+            result[i][0] = box.leftX;
+            result[i][1] = box.upY;
+            result[i][2] = box.width;
+            result[i][3] = box.height;
+        }
+        return result;
+    }
+
+    public double[][] mergeBox() {
+        //return merged bounding boxes just as input in the format of
+        //[up_left_x,up_left_y,width,height]
+
+        // Keep track of boxes that have already been merged
+        Set<BoundingBox> merged = new HashSet<>();
+
+        while (!eventQueue.isEmpty()) {
+            Event event = eventQueue.poll();
+            BoundingBox box = event.box;
+
+            if (event.type == Event.Type.START) {
+                // Skip this box if it has already been merged
+                if (merged.contains(box)) {
+                    continue;
+                }
+
+                List<BoundingBox> overlappingBoxes = intervalSearchTree.searchOverlapping(box);
+                for (BoundingBox otherBox : overlappingBoxes) {
+                    // Skip the other box if it has already been merged
+                    if (merged.contains(otherBox)) {
+                        continue;
+                    }
+
+                    if (BoundingBox.iou(box, otherBox) >= iou_thresh) {
+                        // Merge the boxes and mark them as merged
+                        box = box.merge(otherBox);
+                        merged.add(otherBox);
+                        merged.add(box);
+
+                        // Remove the merged box from the search tree and mergedBoxes list
+                        intervalSearchTree.remove(otherBox);
+                        mergedBoxes.remove(otherBox);
+                    }
+                }
+
+                // Insert the (potentially merged) box into the search tree and mergedBoxes list
+                intervalSearchTree.insert(box);
+                mergedBoxes.add(box);
+            } else {
+                // Remove the interval from the search tree if it's not been merged
+                if (!merged.contains(box)) {
+                    intervalSearchTree.remove(box);
+                }
+            }
+        }
+
+        sortMergedBoxes();
+        return convertToOutputFormat();
+    }
+
+    public static void draw(double[][] bbs)
+    {
+        // ** NO NEED TO MODIFY THIS FUNCTION, WE WON'T CALL THIS **
+        // ** DEBUG ONLY, USE THIS FUNCTION TO DRAW THE BOX OUT**
+        StdDraw.setCanvasSize(960,540);
+        for(double[] box : bbs)
+        {
+            double half_width = (box[2]/2.0);
+            double half_height = (box[3]/2.0);
+            double center_x = box[0]+ half_width;
+            double center_y = box[1] + half_height;
+            //StdDraw use y = 0 at the bottom, 1-center_y to flip
+            StdDraw.rectangle(center_x, 1-center_y, half_width,half_height);
+        }
+    }
+    public static void main(String[] args) {
+        ImageMerge sol = new ImageMerge(
+                new double[][]{
+                        {0.02,0.01,0.1,0.05},{0.0,0.0,0.1,0.05},{0.04,0.02,0.1,0.05},{0.06,0.03,0.1,0.05},{0.08,0.04,0.1,0.05},
+                        {0.24,0.01,0.1,0.05},{0.20,0.0,0.1,0.05},{0.28,0.02,0.1,0.05},{0.32,0.03,0.1,0.05},{0.36,0.04,0.1,0.05},
+                },
+                0.5
+        );
+        double[][] temp = sol.mergeBox();
+        ImageMerge.draw(temp);
+    }
+}
+
+class OutputFormat2{
+    double[][] box;
+    double iou;
+    double[][] answer;
+}
+
+class test{
+    private static boolean deepEquals(double[][] test_ans, double[][] user_ans)
+    {
+        if(test_ans.length != user_ans.length)
+            return false;
+        for(int i = 0; i < user_ans.length; ++i)
+        {
+            if(user_ans[i].length != test_ans[i].length)
+                return false;
+            for(int j = 0; j < user_ans[i].length; ++j)
+            {
+                if(Math.abs(test_ans[i][j]-user_ans[i][j]) > 0.00000000001)
+                    return false;
+            }
+        }
+        return true;
+    }
+    public static void draw(double[][] user, double[][] test)
+    {
+        StdDraw.setCanvasSize(960,540);
+        for(double[] box : user)
+        {
+            StdDraw.setPenColor(StdDraw.BLACK);
+            double half_width = (box[2]/2.0);
+            double half_height = (box[3]/2.0);
+            double center_x = box[0]+ half_width;
+            double center_y = box[1] + half_height;
+            //StdDraw use y = 0 at the bottom, 1-center_y to flip
+
+            StdDraw.rectangle(center_x, 1-center_y, half_width,half_height);
+        }
+        for(double[] box : test)
+        {
+            StdDraw.setPenColor(StdDraw.BOOK_RED);
+            double half_width = (box[2]/2.0);
+            double half_height = (box[3]/2.0);
+            double center_x = box[0]+ half_width;
+            double center_y = box[1] + half_height;
+            //StdDraw use y = 0 at the bottom, 1-center_y to flip
+
+            StdDraw.rectangle(center_x, 1-center_y, half_width,half_height);
+        }
+    }
+    public static void main(String[] args) throws InterruptedException
+    {
+        Gson gson = new Gson();
+        OutputFormat2[] datas;
+        OutputFormat2 data;
+        int num_ac = 0;
+
+        double[][] user_ans;
+        ImageMerge sol;
+
+        try {
+            datas = gson.fromJson(new FileReader(args[0]), OutputFormat2[].class);
+            for(int i = 0; i<datas.length;++i)
+            {
+                data = datas[i];
+                sol = new ImageMerge(data.box, data.iou);
+                user_ans = sol.mergeBox();
+                System.out.print("Sample"+i+": ");
+                if(deepEquals(user_ans, data.answer))
+                {
+                    System.out.println("AC");
+                    num_ac++;
+                }
+                else
+                {
+                    System.out.println("WA");
+                    System.out.println("Data:      " + "\n    iou: "+data.iou + "\n" +
+                            "    box: "+Arrays.deepToString(data.box));
+                    System.out.println("Test_ans:  " + Arrays.deepToString(data.answer));
+                    System.out.println("User_ans:  " + Arrays.deepToString(user_ans));
+                    System.out.println("");
+                    draw(user_ans,data.answer);
+                    Thread.sleep(5000);
+                }
+            }
+            System.out.println("Score: "+num_ac+"/"+datas.length);
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        } catch (JsonIOException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
