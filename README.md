@@ -11,3 +11,4 @@ The main library I used in this project can be found on this [website](https://a
  - HW7: Binary search tree and Red-Black BST
  - HW8: Interval Search Tree (Red-Black BST) and Event Driven Sweep Line Algorithm
  - HW9: Minimum Spanning Tree and Traversing Graph (Prim algorithms and Depth-First Search)
+ - HW10: Best path to the Demon's Castle (Dijkstra's shortest path algorithm -> A* search algorithm (One of the best and popular technique used in path-finding and graph traversals))

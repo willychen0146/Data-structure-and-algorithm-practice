@@ -1,4 +1,4 @@
-# HW8: Lab Network Cabling (Minimum Spanning Tree and Traversing Graph)
+# HW9: Lab Network Cabling (Minimum Spanning Tree and Traversing Graph)
 
 Your lab advisor aims to create an ideal study environment with stable network connections for the router, the server, printers, and students' computers. To reduce cost and ensure optimal communication, **the network design should minimize the total cable length while connecting all devices**. Given your background in 'Practical Data Structures and Algorithms,' your advisor has assigned you the task of designing the lab's cabling.
 
